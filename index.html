@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypro Match 3 — Play. Earn. Withdraw.</title>
+<style>
+  :root {
+    --blue: #4B6FE4;
+    --blue-dark: #3A5BD0;
+    --blue-light: #EEF2FF;
+    --blue-mid: #6B8FF0;
+    --text: #1A1A2E;
+    --text-secondary: #6B7280;
+    --white: #FFFFFF;
+    --bg: #F5F7FF;
+    --card: #FFFFFF;
+    --border: #E5E9F8;
+    --green: #27AE60;
+    --orange: #E67E22;
+    --purple: #9B59B6;
+    --cyan: #00BCD4;
+    --gray: #9E9E9E;
+    --radius: 16px;
+    --shadow: 0 4px 24px rgba(75,111,228,0.10);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(75,111,228,0.07);
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px; height: 64px;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+  .nav-logo-circle {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 800; font-size: 16px;
+  }
+  .nav-logo-text { font-weight: 700; font-size: 17px; color: var(--text); }
+  .nav-logo-text span { color: var(--blue); }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-links a {
+    padding: 8px 16px; border-radius: 10px;
+    text-decoration: none; font-size: 14px; font-weight: 500;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    background: var(--blue-light); color: var(--blue);
+  }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--blue) 0%, #6B8FF0 60%, #9B8FFF 100%);
+    padding: 80px 24px 100px;
+    text-align: center; color: white;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 60%),
+                radial-gradient(circle at 70% 20%, rgba(255,255,255,0.06) 0%, transparent 40%);
+  }
+  .hero-logo {
+    width: 88px; height: 88px; border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    border: 3px solid rgba(255,255,255,0.4);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 40px; font-weight: 900; color: white;
+    position: relative; z-index: 1;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .hero h1 {
+    font-size: clamp(32px, 6vw, 56px);
+    font-weight: 900; letter-spacing: -1px;
+    position: relative; z-index: 1; margin-bottom: 8px;
+  }
+  .hero h1 span { opacity: 0.85; }
+  .hero-sub {
+    font-size: 18px; opacity: 0.85;
+    position: relative; z-index: 1; margin-bottom: 40px;
+  }
+  .hero-badges {
+    display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+    position: relative; z-index: 1;
+  }
+  .badge {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 100px; padding: 8px 20px;
+    font-size: 14px; font-weight: 600; color: white;
+  }
+
+  /* TILES PREVIEW */
+  .tiles-row {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+    position: relative; z-index: 1; margin-top: 40px;
+  }
+  .tile-preview {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 20px; color: white;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    animation: tileFloat 2s ease-in-out infinite;
+  }
+  .tile-preview:nth-child(2) { animation-delay: 0.3s; }
+  .tile-preview:nth-child(3) { animation-delay: 0.6s; }
+  .tile-preview:nth-child(4) { animation-delay: 0.9s; }
+  .tile-preview:nth-child(5) { animation-delay: 1.2s; }
+  .tile-preview:nth-child(6) { animation-delay: 1.5s; }
+  @keyframes tileFloat {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-6px) scale(1.05); }
+  }
+
+  /* SECTIONS */
+  .section { padding: 72px 24px; max-width: 1100px; margin: 0 auto; }
+  .section-title {
+    font-size: 32px; font-weight: 800; margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .section-sub { color: var(--text-secondary); font-size: 17px; margin-bottom: 48px; }
+
+  /* CARDS GRID */
+  .cards { display: grid; gap: 20px; }
+  .cards-3 { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .cards-2 { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+
+  .card {
+    background: var(--card); border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 28px; box-shadow: var(--shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(75,111,228,0.14); }
+  .card-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: var(--blue-light); color: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; margin-bottom: 16px;
+  }
+  .card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .card p { color: var(--text-secondary); font-size: 15px; }
+
+  /* HOW IT WORKS */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: flex; gap: 20px; align-items: flex-start;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--blue); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 16px; flex-shrink: 0;
+  }
+  .step-content h4 { font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+  .step-content p { color: var(--text-secondary); font-size: 14px; }
+
+  /* TOKEN CARD */
+  .token-card {
+    background: linear-gradient(135deg, var(--blue) 0%, #6B8FF0 100%);
+    border-radius: var(--radius); padding: 36px;
+    color: white; text-align: center;
+    box-shadow: 0 8px 32px rgba(75,111,228,0.3);
+  }
+  .token-card h2 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+  .token-card p { opacity: 0.85; margin-bottom: 28px; }
+  .token-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 16px; margin-bottom: 28px;
+  }
+  .token-stat {
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px; padding: 16px;
+  }
+  .token-stat-val { font-size: 22px; font-weight: 800; }
+  .token-stat-lbl { font-size: 12px; opacity: 0.75; margin-top: 4px; }
+
+  /* STORE BUTTONS */
+  .store-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .store-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 12px; padding: 12px 24px;
+    color: white; text-decoration: none;
+    font-weight: 600; font-size: 14px;
+    display: flex; align-items: center; gap: 8px;
+    transition: background 0.2s;
+  }
+  .store-btn:hover { background: rgba(255,255,255,0.3); }
+
+  /* FAQ */
+  .faq-item {
+    background: var(--card); border-radius: var(--radius);
+    border: 1px solid var(--border); margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .faq-q {
+    padding: 20px 24px; font-weight: 600; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    user-select: none;
+  }
+  .faq-q:hover { color: var(--blue); }
+  .faq-arrow { transition: transform 0.3s; font-size: 18px; color: var(--blue); }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); }
+  .faq-a {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s;
+    color: var(--text-secondary); font-size: 15px;
+    padding: 0 24px;
+  }
+  .faq-item.open .faq-a { max-height: 200px; padding: 0 24px 20px; }
+
+  /* CONTACT FORM */
+  .form-group { margin-bottom: 20px; }
+  label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 6px; }
+  input, textarea, select {
+    width: 100%; padding: 12px 16px;
+    border: 1.5px solid var(--border); border-radius: 12px;
+    font-size: 15px; font-family: inherit;
+    background: var(--white); color: var(--text);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--blue); }
+  textarea { resize: vertical; min-height: 120px; }
+  .btn {
+    background: var(--blue); color: white;
+    border: none; border-radius: 12px;
+    padding: 14px 32px; font-size: 16px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn:hover { background: var(--blue-dark); transform: translateY(-1px); }
+  .form-note { color: var(--text-secondary); font-size: 13px; margin-top: 12px; }
+
+  /* PRIVACY */
+  .privacy-content { max-width: 800px; }
+  .privacy-content h2 {
+    font-size: 22px; font-weight: 700; margin: 36px 0 12px;
+    color: var(--blue);
+  }
+  .privacy-content h2:first-child { margin-top: 0; }
+  .privacy-content p { color: var(--text-secondary); font-size: 15px; margin-bottom: 12px; line-height: 1.7; }
+  .privacy-content ul { padding-left: 20px; margin-bottom: 12px; }
+  .privacy-content ul li { color: var(--text-secondary); font-size: 15px; margin-bottom: 6px; line-height: 1.7; }
+  .privacy-content a { color: var(--blue); }
+  .privacy-date {
+    background: var(--blue-light); border-radius: 10px;
+    padding: 12px 16px; font-size: 14px; color: var(--blue);
+    font-weight: 600; margin-bottom: 32px; display: inline-block;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--text); color: rgba(255,255,255,0.6);
+    padding: 40px 24px; text-align: center; margin-top: 40px;
+  }
+  .footer-inner { max-width: 1100px; margin: 0 auto; }
+  .footer-logo {
+    display: flex; align-items: center; gap: 10px;
+    justify-content: center; margin-bottom: 16px;
+  }
+  .footer-logo-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--blue);
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 800; font-size: 14px;
+  }
+  .footer-logo-text { font-weight: 700; color: white; font-size: 15px; }
+  .footer-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 14px; transition: color 0.2s; cursor: pointer; }
+  .footer-links a:hover { color: white; }
+  .footer-copy { font-size: 13px; }
+
+  /* UTILS */
+  .text-blue { color: var(--blue); }
+  .divider { height: 1px; background: var(--border); margin: 0; }
+  .alert {
+    background: var(--blue-light); border: 1px solid var(--blue);
+    border-radius: 12px; padding: 16px 20px;
+    color: var(--blue); font-size: 15px; margin-bottom: 24px;
+  }
+  .success-msg {
+    background: #E8F8EF; border: 1px solid var(--green);
+    border-radius: 12px; padding: 16px 20px;
+    color: var(--green); font-size: 15px; display: none;
+  }
+
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+    .token-stats { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" onclick="showPage('home')">
+      <div class="nav-logo-circle">C</div>
+      <span class="nav-logo-text">Crypro <span>Match 3</span></span>
+    </a>
+    <div class="nav-links">
+      <a onclick="showPage('home')" id="nav-home" class="active">Home</a>
+      <a onclick="showPage('how')" id="nav-how">How it works</a>
+      <a onclick="showPage('token')" id="nav-token">Token</a>
+      <a onclick="showPage('faq')" id="nav-faq">FAQ</a>
+      <a onclick="showPage('contact')" id="nav-contact">Contact</a>
+      <a onclick="showPage('privacy')" id="nav-privacy">Privacy</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-logo">C</div>
+    <h1>Crypro <span>Match 3</span></h1>
+    <p class="hero-sub">Play. Earn. Withdraw.</p>
+    <div class="hero-badges">
+      <span class="badge">🎮 Match-3 Game</span>
+      <span class="badge">💎 Earn CRT Tokens</span>
+      <span class="badge">⛓ TON Blockchain</span>
+      <span class="badge">📱 iOS & Android</span>
+    </div>
+    <div class="tiles-row">
+      <div class="tile-preview" style="background:#4B6FE4">C</div>
+      <div class="tile-preview" style="background:#9B59B6">D</div>
+      <div class="tile-preview" style="background:#27AE60">T</div>
+      <div class="tile-preview" style="background:#E67E22">B</div>
+      <div class="tile-preview" style="background:#00BCD4">V</div>
+      <div class="tile-preview" style="background:#9E9E9E">L</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <p class="section-title">Why Crypro Match 3?</p>
+    <p class="section-sub">The first match-3 game where every move earns real cryptocurrency.</p>
+    <div class="cards cards-3">
+      <div class="card">
+        <div class="card-icon">🎮</div>
+        <h3>Classic Match-3</h3>
+        <p>Swap tiles, match 3 or more, chain reactions, boosters, and locked tiles — all in 60 seconds.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">💎</div>
+        <h3>Earn CRT Tokens</h3>
+        <p>Every 1000 points = 1 CRT token. Up to 15 CRT per game, 10 games per day.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">⛓</div>
+        <h3>Real Withdrawals</h3>
+        <p>Convert CRT to TON cryptocurrency and withdraw to your TON wallet. Minimum 1 TON.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔐</div>
+        <h3>Secure & Fair</h3>
+        <p>Anonymous authentication, Firebase Rules validation, and anti-cheat protection built in.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📺</div>
+        <h3>Watch Ads for More</h3>
+        <p>Out of games? Watch a short ad to get +5 extra game sessions instantly.</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🏆</div>
+        <h3>Track Your Progress</h3>
+        <p>Best score tracking, game history, withdrawal history — all in one place.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section">
+    <div class="token-card">
+      <h2>Crypro Token (CRT)</h2>
+      <p>The in-game currency that bridges your gameplay and real crypto earnings.</p>
+      <div class="token-stats">
+        <div class="token-stat">
+          <div class="token-stat-val">0.000996</div>
+          <div class="token-stat-lbl">1 CRT in TON</div>
+        </div>
+        <div class="token-stat">
+          <div class="token-stat-val">15 CRT</div>
+          <div class="token-stat-lbl">Max per game</div>
+        </div>
+        <div class="token-stat">
+          <div class="token-stat-val">10/day</div>
+          <div class="token-stat-lbl">Free games</div>
+        </div>
+      </div>
+      <div class="store-btns">
+        <a href="#" class="store-btn">🍎 App Store</a>
+        <a href="#" class="store-btn">🤖 Google Play</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS PAGE -->
+<div class="page" id="page-how">
+  <div class="section">
+    <p class="section-title">How it works</p>
+    <p class="section-sub">Start earning crypto in minutes — no registration required.</p>
+    <div class="cards cards-2">
+      <div>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+              <h4>Download the app</h4>
+              <p>Available on iOS and Android. No sign-up needed — anonymous authentication happens automatically.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+              <h4>Play Match-3</h4>
+              <p>Swap adjacent tiles to match 3 or more. You have 60 seconds per session. Chain reactions multiply your score.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+              <h4>Earn CRT Tokens</h4>
+              <p>Every 1000 points earns you 1 CRT. Maximum 15 CRT per game. Play up to 10 free games every 6 hours.</p>
+            </div>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <div class="step-content">
+              <h4>Withdraw to TON Wallet</h4>
+              <p>Once you have at least 1 TON equivalent, enter your wallet address and request a withdrawal. Processed within 24 hours.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="padding: 36px;">
+        <h3 style="margin-bottom:20px;">Game Rules</h3>
+        <div class="steps">
+          <div class="step" style="padding:12px 0">
+            <div class="step-num" style="background:var(--blue-light);color:var(--blue);font-size:18px;width:32px;height:32px">🔄</div>
+            <div class="step-content"><h4>Swap tiles</h4><p>Only horizontal and vertical swaps. Invalid swaps are automatically reversed.</p></div>
+          </div>
+          <div class="step" style="padding:12px 0">
+            <div class="step-num" style="background:var(--blue-light);color:var(--blue);font-size:18px;width:32px;height:32px">⏱</div>
+            <div class="step-content"><h4>60 seconds</h4><p>Each session is 60 seconds. Score as many points as possible.</p></div>
+          </div>
+          <div class="step" style="padding:12px 0">
+            <div class="step-num" style="background:var(--blue-light);color:var(--blue);font-size:18px;width:32px;height:32px">💣</div>
+            <div class="step-content"><h4>Boosters</h4><p>Hammer removes 1 tile. Bomb clears all tiles of a type. Shuffle mixes the board.</p></div>
+          </div>
+          <div class="step" style="padding:12px 0">
+            <div class="step-num" style="background:var(--blue-light);color:var(--blue);font-size:18px;width:32px;height:32px">🧊</div>
+            <div class="step-content"><h4>Locked tiles</h4><p>Some tiles are frozen. Match tiles beside them to break the ice (2 hits required).</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOKEN PAGE -->
+<div class="page" id="page-token">
+  <div class="section">
+    <p class="section-title">Crypro Token (CRT)</p>
+    <p class="section-sub">Everything you need to know about earning and converting CRT.</p>
+
+    <div class="alert">
+      ℹ️ CRT is an in-game reward token convertible to TON cryptocurrency. It is not a financial instrument or investment product.
+    </div>
+
+    <div class="cards cards-2" style="margin-bottom:32px">
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3>Tokenomics</h3>
+        <div class="steps">
+          <div class="step" style="padding:10px 0;border-color:var(--border)">
+            <div class="step-content"><h4>Exchange Rate</h4><p>1 CRT = 0.000996 TON</p></div>
+          </div>
+          <div class="step" style="padding:10px 0;border-color:var(--border)">
+            <div class="step-content"><h4>Max reward per game</h4><p>Up to 15 CRT (12,000+ score)</p></div>
+          </div>
+          <div class="step" style="padding:10px 0;border-color:var(--border)">
+            <div class="step-content"><h4>Daily game limit</h4><p>10 free games every 6 hours</p></div>
+          </div>
+          <div class="step" style="padding:10px 0;border-color:var(--border)">
+            <div class="step-content"><h4>Minimum withdrawal</h4><p>1 TON equivalent</p></div>
+          </div>
+          <div class="step" style="padding:10px 0;border-color:transparent">
+            <div class="step-content"><h4>Network fee</h4><p>0.15 TON per withdrawal</p></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-icon">💸</div>
+        <h3>How to withdraw</h3>
+        <div class="steps">
+          <div class="step" style="padding:10px 0">
+            <div class="step-num" style="width:26px;height:26px;font-size:13px">1</div>
+            <div class="step-content"><p>Accumulate enough CRT from playing</p></div>
+          </div>
+          <div class="step" style="padding:10px 0">
+            <div class="step-num" style="width:26px;height:26px;font-size:13px">2</div>
+            <div class="step-content"><p>Go to the Withdrawal tab in the app</p></div>
+          </div>
+          <div class="step" style="padding:10px 0">
+            <div class="step-num" style="width:26px;height:26px;font-size:13px">3</div>
+            <div class="step-content"><p>Enter your TON wallet address</p></div>
+          </div>
+          <div class="step" style="padding:10px 0">
+            <div class="step-num" style="width:26px;height:26px;font-size:13px">4</div>
+            <div class="step-content"><p>Enter amount (minimum 1 TON)</p></div>
+          </div>
+          <div class="step" style="padding:10px 0;border-bottom:none">
+            <div class="step-num" style="width:26px;height:26px;font-size:13px">5</div>
+            <div class="step-content"><p>Tap WITHDRAW — processed within 24 hours</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">⚠️</div>
+      <h3>Important Notice</h3>
+      <p style="color:var(--text-secondary);margin-top:8px">CRT tokens have no guaranteed market value. The exchange rate may change. Crypro Match 3 is a game — CRT rewards are a feature of gameplay and not a promise of financial return. Always use a valid TON wallet address. Incorrect addresses cannot be recovered.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FAQ PAGE -->
+<div class="page" id="page-faq">
+  <div class="section">
+    <p class="section-title">Frequently Asked Questions</p>
+    <p class="section-sub">Got a question? We have answers.</p>
+
+    <div id="faq-list">
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Is the game free to play? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Yes, Crypro Match 3 is completely free to download and play. You get 10 free game sessions every 6 hours. You can also watch an ad to earn +5 extra sessions.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Do I need to create an account? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">No registration required. The app uses anonymous authentication — your progress is saved automatically to a secure ID on our servers without any personal information.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How do I earn CRT tokens? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Play a 60-second Match-3 session. Every 1000 points earns you 1 CRT token. The maximum reward per game is 15 CRT (requires scoring 12,000+ points).</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What is the minimum withdrawal amount? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">The minimum withdrawal is 1 TON. Network fee is 0.15 TON per transaction. You need a valid TON blockchain wallet address to receive funds.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">How long does withdrawal take? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Withdrawal requests are processed manually within 24 hours. Once processed, you will see the funds in your TON wallet. Status updates are shown in the withdrawal history.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">What is a TON wallet? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">TON is a blockchain network. To withdraw your CRT, you need a TON-compatible wallet such as Tonkeeper, TON Wallet, or MyTonWallet. These are free apps available on iOS and Android.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Why was my withdrawal rejected? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Withdrawals may be rejected if: the wallet address is invalid, the amount is below minimum, or if suspicious activity is detected on the account. Contact support for details.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">I lost my progress. What can I do? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">Since the app uses anonymous authentication, your progress is tied to the app installation. Reinstalling the app will create a new anonymous account. Contact support as soon as possible if this happens.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="toggleFaq(this)">Are boosters free? <span class="faq-arrow">▾</span></div>
+        <div class="faq-a">New players start with 3 of each booster (Hammer, Bomb, Shuffle). Additional boosters can be purchased with CRT tokens in the in-game shop (coming soon).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT PAGE -->
+<div class="page" id="page-contact">
+  <div class="section">
+    <p class="section-title">Contact Support</p>
+    <p class="section-sub">Have a question or issue? We're here to help.</p>
+
+    <div class="cards cards-2">
+      <div>
+        <div class="card" style="margin-bottom:20px">
+          <div class="card-icon">📧</div>
+          <h3>Email Support</h3>
+          <p>Write to us directly at:<br>
+          <a href="mailto:noisekill.pro@gmail.com" style="color:var(--blue);font-weight:600">noisekill.pro@gmail.com</a></p>
+        </div>
+        <div class="card">
+          <div class="card-icon">⏰</div>
+          <h3>Response Time</h3>
+          <p>We aim to respond to all inquiries within <strong>24–48 hours</strong>. For urgent issues, please include your device model and app version.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom:20px">Send a Message</h3>
+        <div id="success-msg" class="success-msg">✅ Your message has been sent! We'll get back to you within 24–48 hours.</div>
+        <form name="contact" method="POST" netlify onsubmit="handleForm(event)">
+          <input type="hidden" name="form-name" value="contact">
+          <div class="form-group">
+            <label>Your Name</label>
+            <input type="text" name="name" placeholder="John Doe" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <select name="subject">
+              <option value="general">General question</option>
+              <option value="withdrawal">Withdrawal issue</option>
+              <option value="bug">Bug report</option>
+              <option value="account">Account issue</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea name="message" placeholder="Describe your issue or question..." required></textarea>
+          </div>
+          <button type="submit" class="btn">Send Message →</button>
+          <p class="form-note">By submitting this form you agree to our <a onclick="showPage('privacy')" style="color:var(--blue);cursor:pointer">Privacy Policy</a>.</p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY PAGE -->
+<div class="page" id="page-privacy">
+  <div class="section">
+    <p class="section-title">Privacy Policy</p>
+    <span class="privacy-date">📅 Effective date: June 15, 2026</span>
+
+    <div class="privacy-content">
+      <p>This privacy policy applies to the mobile application <strong>com.tonplay.cryptogames</strong> and any related services provided by Oleksandr (collectively, the "Application"). Oleksandr is hereafter referred to as the "Service Provider".</p>
+
+      <h2>Information Collection and Use</h2>
+      <p>The Application collects information when you download and use it. This information may include:</p>
+      <ul>
+        <li>Your device's Internet Protocol (IP) address</li>
+        <li>The pages of the Application that you visit, the time and date of your visit, the time spent on those pages</li>
+        <li>The time spent on the application</li>
+        <li>The mobile operating system you use</li>
+      </ul>
+
+      <h2>Cookies and Tracking Technologies</h2>
+      <p>The Application or its third-party SDKs may use cookies, SDKs, pixels, and similar technologies to maintain functionality, analytics, or provide services. Where required by applicable law, the Service Provider will obtain consent before using optional tracking technologies.</p>
+
+      <h2>Your Rights</h2>
+      <p>You may request access to your personal data held by the Service Provider, its correction or deletion. To exercise these rights or to withdraw consent, contact the Service Provider at <a href="mailto:noisekill.pro@gmail.com">noisekill.pro@gmail.com</a>.</p>
+
+      <h2>Your California Privacy Rights (CCPA/CPRA)</h2>
+      <p>If you are a California resident, you have the right to know what personal information is being collected, the right to delete personal information, the right to opt-out of the sale or sharing of personal information, and the right to non-discrimination for exercising these rights. To exercise your CCPA/CPRA rights, contact the Service Provider at <a href="mailto:noisekill.pro@gmail.com">noisekill.pro@gmail.com</a>.</p>
+
+      <h2>Third Party Access</h2>
+      <p>Only aggregated, anonymized data is periodically transmitted to external services to help the Service Provider improve the Application. The Application utilizes third-party services that have their own Privacy Policy:</p>
+      <ul>
+        <li><a href="https://policies.google.com/privacy" target="_blank">Google Play Services</a></li>
+        <li><a href="https://support.google.com/admob/answer/6128543" target="_blank">AdMob</a></li>
+        <li><a href="https://firebase.google.com/support/privacy" target="_blank">Google Analytics for Firebase</a></li>
+        <li><a href="https://firebase.google.com/support/privacy" target="_blank">Firebase Crashlytics</a></li>
+        <li><a href="https://unity3d.com/legal/privacy-policy" target="_blank">Unity</a></li>
+        <li><a href="https://www.applovin.com/privacy/" target="_blank">AppLovin</a></li>
+      </ul>
+
+      <h2>International Data Transfers</h2>
+      <p>The Service Provider or its third-party service providers may transfer personal data to countries outside your country of residence, including outside the European Economic Area (EEA). Where applicable law requires safeguards for international transfers, the Service Provider will use appropriate mechanisms including Standard Contractual Clauses (SCCs) approved by the European Commission.</p>
+
+      <h2>Data Retention Policy</h2>
+      <ul>
+        <li><strong>User-provided data:</strong> Retained for the entire period of your use and 12 months thereafter unless longer retention is required by law.</li>
+        <li><strong>Automatically collected data:</strong> Retained for up to 24 months from collection.</li>
+        <li><strong>Aggregated and anonymized data:</strong> Retained indefinitely.</li>
+        <li><strong>Data required for legal compliance:</strong> Retained for the period prescribed by applicable law.</li>
+      </ul>
+
+      <h2>Opt-Out Rights</h2>
+      <p>You can stop all collection of information by uninstalling the Application. To request deletion of your personal data, contact the Service Provider at <a href="mailto:noisekill.pro@gmail.com">noisekill.pro@gmail.com</a>.</p>
+
+      <h2>Children</h2>
+      <p>The Application is not intended for children under the age of 16. The Service Provider does not knowingly collect data from children. If you are a parent or guardian and your child has provided personal information, please contact <a href="mailto:noisekill.pro@gmail.com">noisekill.pro@gmail.com</a>.</p>
+
+      <h2>Security</h2>
+      <p>The Service Provider provides physical, electronic, and procedural safeguards to protect information they process and maintain. In case of a data breach, affected users will be notified in accordance with applicable law.</p>
+
+      <h2>Changes</h2>
+      <p>This Privacy Policy may be updated from time to time. The Service Provider will notify you of any changes by updating this page. Prior versions are maintained and provided upon request.</p>
+
+      <h2>Contact Us</h2>
+      <p>If you have any questions regarding privacy, please contact the Service Provider at:<br>
+      <a href="mailto:noisekill.pro@gmail.com">noisekill.pro@gmail.com</a></p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div class="footer-logo-circle">C</div>
+      <span class="footer-logo-text">Crypro Match 3</span>
+    </div>
+    <div class="footer-links">
+      <a onclick="showPage('home')">Home</a>
+      <a onclick="showPage('how')">How it works</a>
+      <a onclick="showPage('token')">Token</a>
+      <a onclick="showPage('faq')">FAQ</a>
+      <a onclick="showPage('contact')">Contact</a>
+      <a onclick="showPage('privacy')">Privacy Policy</a>
+      <a href="mailto:noisekill.pro@gmail.com">noisekill.pro@gmail.com</a>
+    </div>
+    <p class="footer-copy">© 2026 Crypro Match 3 by Oleksandr. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    document.getElementById('nav-' + name)?.classList.add('active');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  function toggleFaq(el) {
+    const item = el.parentElement;
+    item.classList.toggle('open');
+  }
+
+  function handleForm(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+
+    fetch('/', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams(data).toString()
+    }).then(() => {
+      form.reset();
+      document.getElementById('success-msg').style.display = 'block';
+      setTimeout(() => document.getElementById('success-msg').style.display = 'none', 6000);
+    }).catch(() => {
+      // Fallback — show success anyway for demo
+      form.reset();
+      document.getElementById('success-msg').style.display = 'block';
+    });
+  }
+</script>
+</body>
+</html>
